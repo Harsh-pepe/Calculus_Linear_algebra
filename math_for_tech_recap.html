@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math for Tech — Complete Recap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e10;
+    --surface: #18181c;
+    --surface2: #222228;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0efe8;
+    --muted: #8a8880;
+    --dim: #4a4946;
+
+    --purple: #a89af5;
+    --purple-bg: rgba(168,154,245,0.12);
+    --purple-border: rgba(168,154,245,0.25);
+
+    --teal: #5ecba1;
+    --teal-bg: rgba(94,203,161,0.1);
+    --teal-border: rgba(94,203,161,0.22);
+
+    --amber: #f0a94a;
+    --amber-bg: rgba(240,169,74,0.1);
+    --amber-border: rgba(240,169,74,0.22);
+
+    --coral: #f07060;
+    --coral-bg: rgba(240,112,96,0.1);
+    --coral-border: rgba(240,112,96,0.22);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: .75rem;
+  }
+  .header-title em {
+    font-style: italic;
+    color: var(--purple);
+  }
+  .header-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* ── STAT ROW ── */
+  .stats {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .stat {
+    padding: 1.5rem 2rem;
+    border-right: 1px solid var(--border);
+    flex: 1;
+  }
+  .stat:last-child { border-right: none; }
+  .stat-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: .25rem;
+  }
+  .stat-lbl {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    min-height: 70vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 2rem 0;
+  }
+  .sidebar-section {
+    padding: 0 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .sidebar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: .75rem;
+    padding-left: .25rem;
+  }
+
+  .topic-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: .65rem .75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s;
+    margin-bottom: 2px;
+  }
+  .topic-item:hover { background: var(--surface); }
+  .topic-item.active { background: var(--surface2); }
+
+  .topic-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .topic-item-text {}
+  .topic-item-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 2px;
+  }
+  .topic-item-tagline {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── DETAIL PANEL ── */
+  .detail {
+    padding: 2.5rem 2.5rem;
+  }
+  .detail-header {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-branch {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .75rem;
+  }
+  .detail-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: .5rem;
+  }
+  .detail-tagline {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .detail-body {
+    font-size: 14px;
+    color: #c8c7c0;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  .detail-formula {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+  .detail-formula-label {
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: .4rem;
+  }
+  .detail-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: .65rem;
+    margin-top: 1.5rem;
+  }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+  .tag {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+  }
+  .analogy-box {
+    border-left: 3px solid;
+    border-radius: 0 8px 8px 0;
+    padding: .85rem 1.1rem;
+    font-size: 13px;
+    color: #c8c7c0;
+    line-height: 1.7;
+    background: var(--surface);
+    margin-bottom: 1.5rem;
+  }
+  .analogy-box strong {
+    font-weight: 600;
+    display: block;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: .3rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── CAREERS ── */
+  .careers-section {
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+  }
+  .careers-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    margin-bottom: .5rem;
+  }
+  .careers-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .career-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  .career-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem;
+    transition: border-color .15s, transform .15s;
+  }
+  .career-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+  }
+  .career-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .35rem;
+  }
+  .career-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .05em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: .75rem;
+  }
+  .career-uses {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .career-uses span {
+    display: inline-block;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin: 2px 2px 2px 0;
+    color: #a8a7a0;
+  }
+  .career-note {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: .65rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* ── BIG PICTURE ── */
+  .bigpicture {
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+  }
+  .bigpicture-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    margin-bottom: .5rem;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 1.5rem 0;
+  }
+  .flow-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .45rem .85rem;
+    font-size: 12px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+  }
+  .flow-arrow {
+    color: var(--dim);
+    font-size: 14px;
+    padding: 0 2px;
+  }
+  .bigpicture-body {
+    font-size: 14px;
+    color: #c8c7c0;
+    line-height: 1.8;
+    max-width: 700px;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); padding: 1.5rem 0; }
+    .detail { padding: 1.5rem 1.25rem; }
+    .stats { flex-wrap: wrap; }
+    .stat { flex: 1 1 45%; }
+    .header { padding: 2rem 1.25rem 1.5rem; }
+    .careers-section, .bigpicture, .footer { padding: 1.5rem 1.25rem; }
+  }
+
+  /* ── TRANSITIONS ── */
+  .detail-header, .detail-body, .detail-formula, .tag-row, .analogy-box {
+    animation: fadeUp .2s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-eyebrow">Complete recap · 11 topics</div>
+  <h1 class="header-title">Math for <em>Tech</em></h1>
+  <p class="header-sub">Linear algebra and calculus — the two pillars behind every AI, ML, and data system. Click any topic to see its recap, formula, analogy, and where it shows up in the real world.</p>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-val">11</div><div class="stat-lbl">topics covered</div></div>
+  <div class="stat"><div class="stat-val">2</div><div class="stat-lbl">core branches</div></div>
+  <div class="stat"><div class="stat-val">5+</div><div class="stat-lbl">career paths</div></div>
+  <div class="stat"><div class="stat-val">1</div><div class="stat-lbl">unified story</div></div>
+</div>
+
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Linear algebra</div>
+      <div id="laTopics"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Calculus</div>
+      <div id="calcTopics"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Synthesis</div>
+      <div id="synTopics"></div>
+    </div>
+  </aside>
+
+  <section class="detail" id="detailPane">
+    <div class="detail-placeholder" id="placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;text-align:center;color:var(--dim)">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin-bottom:1rem;opacity:.3">
+        <rect x="8" y="8" width="14" height="14" rx="3" fill="currentColor"/>
+        <rect x="26" y="8" width="14" height="14" rx="3" fill="currentColor" opacity=".5"/>
+        <rect x="8" y="26" width="14" height="14" rx="3" fill="currentColor" opacity=".5"/>
+        <rect x="26" y="26" width="14" height="14" rx="3" fill="currentColor" opacity=".25"/>
+      </svg>
+      <p style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em">Select a topic →</p>
+    </div>
+    <div id="detailContent" style="display:none"></div>
+  </section>
+</div>
+
+<section class="careers-section">
+  <h2 class="careers-title">Where you use all of this</h2>
+  <p class="careers-sub">Every tech career draws on a different combination of these 11 topics.</p>
+  <div class="career-grid" id="careerGrid"></div>
+</section>
+
+<section class="bigpicture">
+  <h2 class="bigpicture-title">The unified story</h2>
+  <div class="flow-row" id="flowRow"></div>
+  <p class="bigpicture-body">
+    Linear algebra gives you the <strong>language of data</strong> — vectors, matrices, transformations, and dimensionality reduction. Calculus gives you the <strong>language of change</strong> — derivatives, integrals, and gradients. Together, they power every modern AI and ML system. Data enters as a matrix, passes through linear transformations, a loss function is computed, its gradient is calculated, gradient descent updates the model, and PCA compresses the result. You haven't learned 11 isolated topics — you've learned <em>one continuous story</em>.
+  </p>
+</section>
+
+<footer class="footer">
+  <span class="footer-text">Math for Tech · Complete Recap · 11 Topics</span>
+  <span class="footer-text">Linear Algebra + Calculus → AI / ML</span>
+</footer>
+
+<script>
+const topics = [
+  {
+    id:0, branch:'la', num:1,
+    color:'var(--purple)', colorBg:'var(--purple-bg)', colorBorder:'var(--purple-border)',
+    title:'Data tables as vectors & matrices',
+    tagline:'Your spreadsheet is a matrix. Every row is a data point vector.',
+    body:'A dataset with n rows and p columns is an (n × p) matrix X. Operations like dot products, matrix multiplication, and transpose let you compute similarities, predictions, and transformations — all at once, across every row simultaneously. This is why NumPy and pandas are so fast.',
+    formula:'X · Wᵀ  →  transforms all n data points at once\n\ndot(a, b) = a₁b₁ + a₂b₂ + ... = similarity score',
+    analogy:'Think of your data table as a concert hall seating chart — rows are people, columns are their features (height, age, income). A matrix operation applies a rule to every seat at once. Without matrices, you\'d have to process each person one by one.',
+    tags:['NumPy','pandas','SQL','data engineering','feature engineering'],
+    branchLabel:'Linear Algebra · Topic 1'
+  },
+  {
+    id:1, branch:'la', num:2,
+    color:'var(--purple)', colorBg:'var(--purple-bg)', colorBorder:'var(--purple-border)',
+    title:'Linear transformations',
+    tagline:'Matrices are functions that rotate, scale, and project vectors.',
+    body:'Every matrix multiplication y = Ax is a linear transformation — it moves vectors through space without curving them. Neural network layers are exactly this: a matrix multiplication followed by a non-linear activation. Stacking layers stacks transformations. This is the core geometry of deep learning.',
+    formula:'y = Ax  →  rotate, scale, shear, project\n\nf(αu + βv) = αf(u) + βf(v)  ← linearity rule',
+    analogy:'Imagine shining a spotlight at a 3D object — the shadow on the wall is a linear transformation (projection). Tilting the light rotates the shadow. Scaling the object scales the shadow. Stacking transformations = stacking matrix multiplications. Every neural network layer is a different "angle of light".',
+    tags:['neural network layers','3D graphics','image processing','robotics','physics engines'],
+    branchLabel:'Linear Algebra · Topic 2'
+  },
+  {
+    id:2, branch:'la', num:3,
+    color:'var(--purple)', colorBg:'var(--purple-bg)', colorBorder:'var(--purple-border)',
+    title:'Eigendecomposition',
+    tagline:'Find the natural axes of a matrix. Apply transformations cheaply.',
+    body:'If C = VΛVᵀ, then applying C one thousand times is just V Λ¹⁰⁰⁰ Vᵀ — trivially easy since Λ is diagonal. Eigenvectors are the "special directions" a matrix only stretches, never rotates. This decomposition is the engine behind PCA, Google PageRank, spectral clustering, and quantum mechanics.',
+    formula:'Cv = λv  →  eigenvector v is only scaled by λ\n\nC = VΛVᵀ  →  V = eigenvectors, Λ = eigenvalues',
+    analogy:'A guitar string vibrates in characteristic modes — those are eigenvectors. Each mode has a natural frequency — that\'s the eigenvalue. Any vibration is a combination of modes. Similarly, any dataset can be decomposed into its natural "vibration directions," which is exactly what eigendecomposition does.',
+    tags:['PCA','PageRank','spectral clustering','quantum computing','graph analysis'],
+    branchLabel:'Linear Algebra · Topic 3'
+  },
+  {
+    id:3, branch:'calc', num:4,
+    color:'var(--teal)', colorBg:'var(--teal-bg)', colorBorder:'var(--teal-border)',
+    title:'Functions modelling real-world data',
+    tagline:'Different phenomena need different curve shapes to fit them.',
+    body:'Linear functions model constant-rate change. Polynomials model curved relationships. Exponentials model viral spread, compound interest, and population growth. Logarithms model diminishing returns and human perception. Sigmoid and ReLU functions model neural activations. Choosing the right function is data science — wrong shape means wrong model.',
+    formula:'y = eˣ          exponential (viral growth)\ny = log(x)      logarithm (diminishing returns)\nσ(x) = 1/(1+e⁻ˣ)  sigmoid (binary output)',
+    analogy:'A thermometer is a linear function (temperature → mercury height). A bank account with compound interest is exponential (time → balance). Human loudness perception is logarithmic (decibels). Choosing the wrong model is like using a thermometer to measure bank balance — technically a number, but meaningless.',
+    tags:['regression','activation functions','signal modelling','finance','epidemiology'],
+    branchLabel:'Calculus · Topic 4'
+  },
+  {
+    id:4, branch:'calc', num:5,
+    color:'var(--teal)', colorBg:'var(--teal-bg)', colorBorder:'var(--teal-border)',
+    title:'Derivatives & their meaning',
+    tagline:'The instantaneous rate of change — the slope at a single point.',
+    body:'f\'(x) tells you the slope at every point. f\'(x) = 0 means flat (possible peak or valley). f\'(x) > 0 means rising. f\'(x) < 0 means falling. In ML, the derivative of the loss with respect to a weight tells you: "if I nudge this weight slightly, does error go up or down?" That signal trains every neural network in existence.',
+    formula:"f'(x) = lim[h→0] (f(x+h) − f(x)) / h\n\nd/dx [xⁿ] = nxⁿ⁻¹   ·   d/dx [eˣ] = eˣ",
+    analogy:'Imagine driving and looking at your speedometer — that\'s the derivative of your position (distance over time). If speed = 0, you\'re stopped (local extremum). If speed > 0, you\'re moving forward. The speedometer doesn\'t care where you\'ve been — only how fast you\'re changing right now. That\'s the derivative.',
+    tags:['backpropagation','sensitivity analysis','physics simulations','economics','signal processing'],
+    branchLabel:'Calculus · Topic 5'
+  },
+  {
+    id:5, branch:'calc', num:6,
+    color:'var(--teal)', colorBg:'var(--teal-bg)', colorBorder:'var(--teal-border)',
+    title:'Maxima & minima via derivatives',
+    tagline:'Set the derivative to zero to find peaks and valleys.',
+    body:'At any maximum or minimum, the tangent is flat: f\'(x) = 0. The second derivative confirms which — f\'\'(x) < 0 means maximum (concave down), f\'\'(x) > 0 means minimum (concave up). In ML you always want to minimise the loss function. Every optimiser — Adam, SGD, RMSProp — is searching for this minimum.',
+    formula:"f'(x) = 0  AND  f''(x) > 0  →  local minimum\nf'(x) = 0  AND  f''(x) < 0  →  local maximum",
+    analogy:'Imagine a hiker on a hilly landscape — they want to find the lowest valley (minimum loss). They look at the slope of the ground (derivative). When the slope is zero, they might be at a valley or a peak. They check if the ground curves up around them (second derivative) to confirm it\'s a valley, not a hilltop.',
+    tags:['loss minimisation','game theory','economics','operations research','physics'],
+    branchLabel:'Calculus · Topic 6'
+  },
+  {
+    id:6, branch:'calc', num:7,
+    color:'var(--teal)', colorBg:'var(--teal-bg)', colorBorder:'var(--teal-border)',
+    title:'Integration & area under curves',
+    tagline:'Accumulate quantities by summing infinitely thin slices.',
+    body:'Integration is the reverse of differentiation. The integral of velocity gives distance. The integral of a probability density over a range gives probability. In ML, integrals appear in Bayesian inference, normalising distributions, and computing expected values. In data science, p-values are areas under distribution curves.',
+    formula:'∫ f(x) dx  →  total accumulated quantity\n\nP(a ≤ X ≤ b) = ∫[a→b] p(x) dx  (probability)',
+    analogy:'Imagine filling a swimming pool — you can\'t measure total volume from just the flow rate at this instant, but if you record the flow rate continuously and sum it all up (integrate), you get the total volume of water. Integration accumulates every tiny contribution into a total.',
+    tags:['probability & statistics','Bayesian ML','signal processing','physics','A/B testing'],
+    branchLabel:'Calculus · Topic 7'
+  },
+  {
+    id:7, branch:'calc', num:8,
+    color:'var(--amber)', colorBg:'var(--amber-bg)', colorBorder:'var(--amber-border)',
+    title:'Multivariable functions',
+    tagline:'Real systems depend on many inputs at once, not just one.',
+    body:'f(x, y, z, ...) takes multiple inputs and returns an output. A neural network loss L(w₁, w₂, ..., wₙ) is a function of millions of weights — a surface in millions of dimensions. Visualising these as 2D contour maps (like a topographic map) or 3D surfaces builds intuition for why optimisation is hard.',
+    formula:'L(w₁, w₂, ..., wₙ)  →  loss surface\n\nf(x, y) = x² + y²  →  bowl-shaped paraboloid',
+    analogy:'A recipe is a multivariable function — output (tastiness) depends on flour, sugar, eggs, baking time, temperature... Changing one ingredient while holding others fixed is exactly what a partial derivative does. The "perfect recipe" is the minimum of the loss surface — finding it is the optimisation problem.',
+    tags:['loss landscapes','hyperparameter tuning','financial modelling','physics','climate science'],
+    branchLabel:'Multivariable Calculus · Topic 8'
+  },
+  {
+    id:8, branch:'calc', num:9,
+    color:'var(--amber)', colorBg:'var(--amber-bg)', colorBorder:'var(--amber-border)',
+    title:'Partial derivatives',
+    tagline:'Sensitivity to one variable while holding all others fixed.',
+    body:'∂f/∂x₁ is the rate of change of f with respect to x₁ alone — all other variables are frozen. In a neural network, ∂L/∂wᵢ tells you how much the loss changes if you nudge weight i. Computing all partial derivatives together gives the gradient vector — the direction of steepest ascent on the loss surface.',
+    formula:'∂f/∂x = rate of change w.r.t. x, others fixed\n\n∇f = [∂f/∂x₁, ∂f/∂x₂, ..., ∂f/∂xₙ]  ← gradient',
+    analogy:'You\'re in a mountain range (multivariable loss surface). A partial derivative asks: "If I only walk East (x-direction), how steeply does the ground rise?" You ignore North/South completely. Do this for every direction separately, then combine them into one "steepest direction" — that\'s the gradient.',
+    tags:['backpropagation','sensitivity analysis','physics sims','control systems','economics'],
+    branchLabel:'Multivariable Calculus · Topic 9'
+  },
+  {
+    id:9, branch:'calc', num:10,
+    color:'var(--amber)', colorBg:'var(--amber-bg)', colorBorder:'var(--amber-border)',
+    title:'Gradient descent',
+    tagline:'Walk downhill on the loss surface by following the negative gradient.',
+    body:'Start at any point. Compute the gradient (all partial derivatives). Step in the opposite direction — downhill. Repeat until convergence. This algorithm, in various forms (SGD, Adam, AdaGrad), trains every neural network ever built, from simple logistic regression to GPT-4. The learning rate α controls step size — too large overshoots, too small crawls.',
+    formula:'w ← w − α · ∇L(w)   (one update step)\n\nα = learning rate   ·   ∇L(w) = gradient of loss',
+    analogy:'You\'re blindfolded on a hilly landscape trying to find the lowest point. You can\'t see the whole map — you can only feel the slope of the ground under your feet (gradient). You take a small step downhill. Feel again. Step downhill again. Eventually you reach a valley. That\'s gradient descent — blind, local, iterative descent.',
+    tags:['neural network training','Adam/SGD/RMSProp','reinforcement learning','LLMs','any ML model'],
+    branchLabel:'Multivariable Calculus · Topic 10'
+  },
+  {
+    id:10, branch:'syn', num:11,
+    color:'var(--coral)', colorBg:'var(--coral-bg)', colorBorder:'var(--coral-border)',
+    title:'Principal components analysis',
+    tagline:'Find the directions of maximum variance. Compress without losing structure.',
+    body:'PCA eigendecomposes the covariance matrix to find orthogonal axes ranked by variance. Project your data onto the top-k axes to reduce dimensions while preserving structure. It uses topics 1–3 directly: matrix operations, linear transformations, and eigendecomposition. The result: your 1000-feature dataset becomes a 10-feature dataset with 95% of the information preserved.',
+    formula:'C = (1/n) X̃ᵀ X̃      covariance matrix\nC = VΛVᵀ            eigendecompose\nZ = X̃ · V_k         project onto top-k PCs',
+    analogy:'PCA is like JPEG compression for data. JPEG breaks an image into frequency components and throws away the unimportant high-frequency ones. PCA breaks your data into variance components and lets you discard the low-variance ones. You can "decompress" (reconstruct) — but with a little quality loss. More components kept = better reconstruction.',
+    tags:['dimensionality reduction','face recognition','genomics','data visualisation','noise removal'],
+    branchLabel:'Synthesis: Linear Algebra + Calculus · Topic 11'
+  }
+];
+
+const careers = [
+  {
+    name:'AI / ML engineer',
+    badge:'All 11 topics',
+    color:'var(--purple)', badgeBg:'var(--purple-bg)', badgeTxt:'var(--purple)',
+    uses:['Matrices (1,2)','Eigendecomp (3)','Loss functions (4,6)','Derivatives (5,9)','Gradient descent (10)','PCA (11)'],
+    note:'You use every topic daily. Neural nets are topics 1–10 stitched together.'
+  },
+  {
+    name:'Data scientist',
+    badge:'Heavy on stats',
+    color:'var(--teal)', badgeBg:'var(--teal-bg)', badgeTxt:'var(--teal)',
+    uses:['Data matrices (1)','Functions (4)','Probability (7)','Multivariable (8)','PCA (11)'],
+    note:'Less deep on eigendecomposition, more on probability and statistical modelling.'
+  },
+  {
+    name:'Software engineer',
+    badge:'Practical subset',
+    color:'#5b9cf5', badgeBg:'rgba(91,156,245,0.1)', badgeTxt:'#5b9cf5',
+    uses:['Matrices/graphics (1,2)','Physics engines (5)','Game sims (7)','Optimisation (6)'],
+    note:'3D games, graphics, physics engines, and systems draw on topics 1–7.'
+  },
+  {
+    name:'Computer vision / robotics',
+    badge:'Geometry-heavy',
+    color:'var(--amber)', badgeBg:'var(--amber-bg)', badgeTxt:'var(--amber)',
+    uses:['Transforms (2)','Eigendecomp (3)','Multivariable (8)','Partial derivs (9)','PCA (11)'],
+    note:'Image transforms, depth estimation, SLAM — linear algebra and calculus throughout.'
+  },
+  {
+    name:'Quant finance',
+    badge:'Calculus-heavy',
+    color:'#7ed4a0', badgeBg:'rgba(126,212,160,0.1)', badgeTxt:'#7ed4a0',
+    uses:['Data matrices (1)','Functions/models (4)','Derivatives (5)','Integration (7)','Multivariable (8)'],
+    note:'Options pricing, risk, portfolio optimisation — topics 4–8 are the core.'
+  }
+];
+
+const flow = [
+  'raw data matrix','linear transforms','multivariable loss','partial derivatives','gradient descent','trained model','PCA compression'
+];
+
+// ── RENDER SIDEBAR ──
+function renderSidebar() {
+  const la = document.getElementById('laTopics');
+  const calc = document.getElementById('calcTopics');
+  const syn = document.getElementById('synTopics');
+
+  topics.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'topic-item';
+    el.id = 'ti-'+t.id;
+    el.innerHTML = `
+      <div class="topic-num" style="background:${t.colorBg};color:${t.color}">${t.num}</div>
+      <div class="topic-item-text">
+        <div class="topic-item-title">${t.title}</div>
+        <div class="topic-item-tagline">${t.tagline}</div>
+      </div>`;
+    el.onclick = () => showTopic(t.id);
+    if (t.branch === 'la') la.appendChild(el);
+    else if (t.branch === 'calc') calc.appendChild(el);
+    else syn.appendChild(el);
+  });
+}
+
+// ── RENDER DETAIL ──
+function showTopic(id) {
+  const t = topics[id];
+  document.querySelectorAll('.topic-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('ti-'+id).classList.add('active');
+  document.getElementById('placeholder').style.display = 'none';
+  const content = document.getElementById('detailContent');
+  content.style.display = 'block';
+  content.innerHTML = `
+    <div class="detail-header" style="animation:fadeUp .2s ease both">
+      <div class="detail-branch" style="color:${t.color}">${t.branchLabel}</div>
+      <h2 class="detail-title">${t.title}</h2>
+      <div class="detail-tagline">${t.tagline}</div>
+    </div>
+    <p class="detail-body" style="animation:fadeUp .2s ease .04s both">${t.body}</p>
+    <div class="analogy-box" style="border-color:${t.color};animation:fadeUp .2s ease .06s both">
+      <strong style="color:${t.color}">Real-world analogy</strong>${t.analogy}
+    </div>
+    <div class="detail-formula" style="animation:fadeUp .2s ease .08s both">
+      <div class="detail-formula-label">Key formula</div>${t.formula}
+    </div>
+    <div style="animation:fadeUp .2s ease .10s both">
+      <div class="detail-section-title">Appears in</div>
+      <div class="tag-row">${t.tags.map(tag=>`<span class="tag" style="background:${t.colorBg};color:${t.color};border:1px solid ${t.colorBorder}">${tag}</span>`).join('')}</div>
+    </div>`;
+}
+
+// ── RENDER CAREERS ──
+function renderCareers() {
+  const grid = document.getElementById('careerGrid');
+  careers.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'career-card';
+    card.style.borderColor = c.badgeBg;
+    card.innerHTML = `
+      <div class="career-name">${c.name}</div>
+      <span class="career-badge" style="background:${c.badgeBg};color:${c.badgeTxt}">${c.badge}</span>
+      <div class="career-uses">${c.uses.map(u=>`<span>${u}</span>`).join('')}</div>
+      <div class="career-note">${c.note}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ── RENDER FLOW ──
+function renderFlow() {
+  const row = document.getElementById('flowRow');
+  flow.forEach((step, i) => {
+    const box = document.createElement('div');
+    box.className = 'flow-box';
+    box.textContent = step;
+    row.appendChild(box);
+    if (i < flow.length - 1) {
+      const arr = document.createElement('span');
+      arr.className = 'flow-arrow';
+      arr.textContent = '→';
+      row.appendChild(arr);
+    }
+  });
+}
+
+renderSidebar();
+renderCareers();
+renderFlow();
+
+// Auto-open first topic
+showTopic(0);
+</script>
+</body>
+</html>
