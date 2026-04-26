@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathematical Foundations for AI/ML — Capstone Lecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Code+Pro:wght@400;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --cream: #ede6d3;
+    --gold: #b8860b;
+    --gold-light: #d4a017;
+    --rust: #8b3a0f;
+    --teal: #1a5f5a;
+    --teal-light: #2a8f88;
+    --charcoal: #2c2416;
+    --muted: #6b5d4a;
+    --rule: #c8b89a;
+    --highlight: #fff3c4;
+    --code-bg: #1e1a12;
+    --code-fg: #e8d5a3;
+    --code-accent: #f0a500;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    counter-reset: section;
+  }
+
+  /* ─── DECORATIVE BACKGROUND ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,160,120,0.07) 27px, rgba(180,160,120,0.07) 28px),
+      repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(180,160,120,0.04) 27px, rgba(180,160,120,0.04) 28px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── COVER PAGE ─── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(160deg, var(--charcoal) 0%, #3a2e1a 50%, var(--charcoal) 100%);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(184,134,11,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cover-ornament {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+    letter-spacing: 0.3em;
+    color: var(--gold-light);
+    animation: fadeDown 1.2s ease both;
+  }
+
+  .cover-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 1.5rem;
+    animation: fadeDown 1s ease 0.2s both;
+  }
+
+  .cover h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    color: #f5ead6;
+    margin-bottom: 1.2rem;
+    max-width: 820px;
+    animation: fadeDown 1s ease 0.3s both;
+  }
+
+  .cover h1 em {
+    color: var(--gold-light);
+    font-style: normal;
+  }
+
+  .cover-subtitle {
+    font-size: 1.1rem;
+    color: #c9b895;
+    max-width: 580px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    animation: fadeDown 1s ease 0.5s both;
+  }
+
+  .cover-rule {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 2.5rem;
+    animation: fadeDown 1s ease 0.4s both;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 3rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.78rem;
+    color: #a08a68;
+    letter-spacing: 0.1em;
+    animation: fadeDown 1s ease 0.6s both;
+  }
+
+  .cover-meta span { display: flex; flex-direction: column; gap: 0.3rem; }
+  .cover-meta strong { color: var(--gold-light); font-size: 0.85rem; }
+
+  .cover-scroll {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--gold-light);
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ─── MAIN LAYOUT ─── */
+  .page-wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── TOC ─── */
+  .toc-section {
+    background: var(--cream);
+    border-top: 5px solid var(--gold);
+    padding: 4rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .toc-inner { max-width: 920px; margin: 0 auto; padding: 0 2.5rem; }
+
+  .toc-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+  }
+
+  .toc-desc { color: var(--muted); font-size: 0.92rem; margin-bottom: 2.5rem; }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 3rem;
+  }
+
+  @media (max-width: 640px) { .toc-grid { grid-template-columns: 1fr; } }
+
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    font-size: 0.9rem;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed var(--rule);
+    transition: color 0.2s;
+  }
+
+  .toc-item:hover { color: var(--teal); }
+  .toc-num { font-family: 'Source Code Pro', monospace; font-size: 0.72rem; color: var(--gold); min-width: 1.8rem; }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 4rem 0 3rem; border-bottom: 1px solid var(--rule); }
+
+  .section-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+    counter-increment: section;
+  }
+
+  .section-label::before { content: "§ " counter(section, decimal-leading-zero) " — "; }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-weight: 900;
+    color: var(--charcoal);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.9rem;
+  }
+
+  h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 60px; height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--rust);
+    margin: 2rem 0 0.7rem;
+  }
+
+  h4 {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 1.1rem; }
+
+  /* ─── CALLOUTS ─── */
+  .callout {
+    border-left: 4px solid var(--gold);
+    background: rgba(184,134,11,0.07);
+    padding: 1.2rem 1.5rem;
+    margin: 1.8rem 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .callout.teal {
+    border-left-color: var(--teal);
+    background: rgba(26,95,90,0.06);
+  }
+
+  .callout.rust {
+    border-left-color: var(--rust);
+    background: rgba(139,58,15,0.06);
+  }
+
+  .callout-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .callout.teal .callout-label { color: var(--teal); }
+  .callout.rust .callout-label { color: var(--rust); }
+
+  /* ─── MATH DISPLAY ─── */
+  .math-block {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin: 1.8rem 0;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.92rem;
+    line-height: 2;
+    overflow-x: auto;
+    border: 1px solid rgba(184,134,11,0.3);
+    position: relative;
+  }
+
+  .math-block::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -1px; right: 1.2rem;
+    background: var(--gold);
+    color: var(--charcoal);
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 0 0 6px 6px;
+    font-weight: 600;
+  }
+
+  .math-block .eq-accent { color: var(--code-accent); }
+  .math-block .eq-comment { color: #7a6a4a; font-style: italic; }
+  .math-block .eq-var { color: #a8d8a8; }
+  .math-block .eq-num { color: #f0c87a; }
+
+  /* ─── CODE BLOCKS ─── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 2rem 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    border: 1px solid rgba(240,165,0,0.2);
+  }
+
+  .code-header {
+    background: rgba(240,165,0,0.12);
+    padding: 0.6rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-bottom: 1px solid rgba(240,165,0,0.15);
+  }
+
+  .code-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .code-dot:nth-child(1) { background: #ff6b6b; }
+  .code-dot:nth-child(2) { background: #ffd93d; }
+  .code-dot:nth-child(3) { background: #6bcb77; }
+
+  .code-title {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.72rem;
+    color: #a08060;
+    letter-spacing: 0.1em;
+    margin-left: auto;
+  }
+
+  pre {
+    padding: 1.5rem 1.8rem;
+    overflow-x: auto;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.83rem;
+    line-height: 1.7;
+    color: var(--code-fg);
+  }
+
+  pre .kw { color: #c792ea; }
+  pre .fn { color: #82aaff; }
+  pre .st { color: #c3e88d; }
+  pre .cm { color: #546e7a; font-style: italic; }
+  pre .nm { color: #f78c6c; }
+  pre .op { color: var(--code-accent); }
+
+  /* ─── CASE STUDY CARDS ─── */
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .case-card {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--teal);
+    border-radius: 6px;
+    padding: 1.4rem 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .case-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+  .case-card:nth-child(2n) { border-top-color: var(--rust); }
+  .case-card:nth-child(3n) { border-top-color: var(--gold); }
+
+  .case-icon { font-size: 2rem; margin-bottom: 0.7rem; }
+  .case-card h4 { margin: 0 0 0.5rem; font-size: 0.82rem; }
+  .case-card p { font-size: 0.88rem; color: var(--muted); margin: 0; line-height: 1.6; }
+
+  /* ─── PIPELINE DIAGRAM ─── */
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 2rem 0;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .pipe-step {
+    flex: 1;
+    min-width: 120px;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    padding: 1rem 1rem 1rem;
+    text-align: center;
+    position: relative;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .pipe-step:not(:last-child)::after {
+    content: '▶';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 1rem;
+    z-index: 2;
+    background: var(--paper);
+    padding: 0 2px;
+  }
+
+  .pipe-step strong {
+    display: block;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    margin-bottom: 0.4rem;
+  }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .highlight-box {
+    background: var(--highlight);
+    border: 1px solid #e8d060;
+    border-radius: 6px;
+    padding: 1.2rem 1.6rem;
+    margin: 1.8rem 0;
+    font-size: 0.95rem;
+  }
+
+  /* ─── TOPIC TIMELINE ─── */
+  .timeline {
+    border-left: 3px solid var(--rule);
+    margin: 2rem 0 2rem 1rem;
+    padding-left: 2rem;
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 1.8rem;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -2.55rem;
+    top: 0.45rem;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--paper);
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+
+  .tl-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .tl-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 0.3rem;
+  }
+
+  .tl-body { font-size: 0.88rem; color: var(--muted); }
+
+  /* ─── TWO-COL LAYOUT ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ─── SUMMARY TABLE ─── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.8rem 0;
+    font-size: 0.88rem;
+  }
+
+  thead tr {
+    background: var(--charcoal);
+    color: var(--gold-light);
+  }
+
+  thead th {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.8rem 1rem;
+    text-align: left;
+  }
+
+  tbody tr { border-bottom: 1px solid var(--rule); }
+  tbody tr:nth-child(even) { background: var(--cream); }
+  tbody td { padding: 0.75rem 1rem; vertical-align: top; line-height: 1.5; }
+  tbody td:first-child { font-family: 'Source Code Pro', monospace; font-size: 0.82rem; color: var(--teal); font-weight: 600; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--charcoal);
+    color: #8a7a60;
+    text-align: center;
+    padding: 3rem 2rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+  }
+
+  footer .footer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--gold-light);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ─── MISC ─── */
+  ul, ol { padding-left: 1.6rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.4rem; }
+  strong { color: var(--charcoal); }
+  em { color: var(--rust); font-style: italic; }
+
+  .inline-math {
+    font-family: 'Source Code Pro', monospace;
+    background: rgba(184,134,11,0.10);
+    color: var(--rust);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.92em;
+  }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+  .tag {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid currentColor;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .tag.teal { color: var(--teal); }
+  .tag.gold { color: var(--gold); }
+  .tag.rust { color: var(--rust); }
+
+  blockquote {
+    border-left: 3px solid var(--gold);
+    margin: 1.5rem 0;
+    padding: 0.6rem 1.5rem;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     COVER
+═══════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-ornament">∑ ∇ λ ∫</div>
+  <div class="cover-label">Capstone Lecture · Data Science Foundations</div>
+  <h1>From Equations to Intelligence:<br><em>Why Mathematics Is the Hidden Engine of AI</em></h1>
+  <div class="cover-rule"></div>
+  <p class="cover-subtitle">A two-hour synthesis of linear algebra, calculus, and multivariable methods — and the extraordinary things they power in the real world of Artificial Intelligence, Machine Learning, and IoT.</p>
+  <div class="cover-meta">
+    <span><strong>Duration</strong>~120 min</span>
+    <span><strong>Level</strong>Capstone</span>
+    <span><strong>Tools</strong>Python · NumPy · Matplotlib</span>
+    <span><strong>Domains</strong>AI · ML · IoT · Data Science</span>
+  </div>
+  <div class="cover-scroll">↓ scroll to begin</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TABLE OF CONTENTS
+═══════════════════════════════════════════════════════ -->
+<div class="toc-section">
+  <div class="toc-inner">
+    <div class="toc-header">Table of Contents</div>
+    <p class="toc-desc">Eleven acts, one grand story — the mathematics you have learnt, woven into the fabric of modern AI.</p>
+    <nav class="toc-grid">
+      <a class="toc-item" href="#intro"><span class="toc-num">00</span>Why This Lecture Exists</a>
+      <a class="toc-item" href="#vectors-matrices"><span class="toc-num">01</span>Data as Vectors & Matrices</a>
+      <a class="toc-item" href="#linear-transforms"><span class="toc-num">02</span>Linear Transformations</a>
+      <a class="toc-item" href="#eigendecomp"><span class="toc-num">03</span>Eigendecomposition</a>
+      <a class="toc-item" href="#functions"><span class="toc-num">04</span>Functions & Real-World Data</a>
+      <a class="toc-item" href="#derivatives"><span class="toc-num">05</span>Derivatives & Their Meaning</a>
+      <a class="toc-item" href="#optim"><span class="toc-num">06</span>Maxima, Minima & Optimization</a>
+      <a class="toc-item" href="#integration"><span class="toc-num">07</span>Integration & Area Under Curves</a>
+      <a class="toc-item" href="#multivariable"><span class="toc-num">08</span>Multivariable Functions</a>
+      <a class="toc-item" href="#grad-descent"><span class="toc-num">09</span>Gradient Descent</a>
+      <a class="toc-item" href="#pca"><span class="toc-num">10</span>Principal Component Analysis</a>
+      <a class="toc-item" href="#synthesis"><span class="toc-num">11</span>Grand Synthesis & Next Steps</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+<!-- ═══════════════════════════════════════════════════════
+     INTRO
+═══════════════════════════════════════════════════════ -->
+<section id="intro">
+  <div class="section-label">Prologue</div>
+  <h2>Why This Lecture Exists</h2>
+
+  <p>You have spent an entire course building a toolkit. You have wrestled with dot products and eigenvalues, traced the slope of curves, and found areas beneath functions you thought had no business being integrated. Sometimes, perhaps, it felt abstract — a set of rules and procedures with no obvious destination. This final lecture is that destination.</p>
+
+  <blockquote>"Mathematics is not a collection of miscellaneous tricks. It is a single, coherent language for describing change, structure, and uncertainty — and every major breakthrough in AI is, at its core, a mathematical idea."</blockquote>
+
+  <p>We are living through the most consequential technological transition in human history. Self-driving cars, language models that write poetry, devices that predict crop disease from a photo taken by a farmer's phone — all of these rest on the mathematics you now know. This lecture will show you exactly <em>how</em>. Not vaguely, not metaphorically, but precisely and concretely, with code you can run today.</p>
+
+  <p>We will trace two grand arcs simultaneously: the arc of <strong>Linear Algebra</strong> — how vectors, matrices, transformations, and eigendecomposition power the representational machinery of AI — and the arc of <strong>Calculus</strong> — how derivatives, integrals, and gradients power the learning machinery of AI. And we will see them intertwine in the two most important algorithms you will encounter in your entire data science career: <strong>Gradient Descent</strong> and <strong>Principal Component Analysis</strong>.</p>
+
+  <div class="callout">
+    <div class="callout-label">📌 How to use this lecture</div>
+    Each section introduces one mathematical idea, shows its geometric and computational meaning, and then maps it to real-world applications in AI, ML, IoT, and beyond. Code snippets throughout use Python/NumPy — the industry-standard toolchain. By the end, you will be able to look at any ML paper and recognize the mathematics inside it.
+  </div>
+
+  <p>Let us begin not with an equation, but with a question: <em>What is data, really?</em></p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 1: VECTORS & MATRICES
+═══════════════════════════════════════════════════════ -->
+<section id="vectors-matrices">
+  <div class="section-label">Act One</div>
+  <h2>Data Tables as Vectors and Matrices</h2>
+
+  <p>Every dataset you will ever encounter — a spreadsheet of patient vitals, a table of sensor readings from an IoT deployment, a million rows of e-commerce transactions — is, at its most fundamental level, a <strong>matrix</strong>. Each row is a <strong>vector</strong> in some high-dimensional space. This is not a poetic metaphor. It is a precise mathematical statement, and treating it seriously unlocks an enormous amount of power.</p>
+
+  <h3>The Data Matrix</h3>
+  <p>Suppose you are building a model to predict house prices. Your dataset has <span class="inline-math">n = 10,000</span> houses (observations) and <span class="inline-math">d = 12</span> features: area, number of bedrooms, age, location coordinates, and so on. Mathematically, this is a matrix <span class="inline-math">X ∈ ℝ^{n×d}</span> — a rectangle of real numbers with 10,000 rows and 12 columns. Each row <span class="inline-math">x_i ∈ ℝ^d</span> is a <em>data point</em>: a vector in 12-dimensional space representing one house.</p>
+
+  <div class="math-block" data-label="Matrix Notation">
+    <span class="eq-var">X</span> <span class="eq-accent">=</span> <span class="eq-comment">[ x₁ | x₂ | ... | xₙ ]ᵀ</span>  <span class="eq-comment">← n×d data matrix</span><br><br>
+    <span class="eq-var">x_i</span> <span class="eq-accent">=</span> <span class="eq-comment">[ area, bedrooms, age, lat, lon, ... ]</span>  <span class="eq-comment">← single data point vector</span><br><br>
+    <span class="eq-comment">‖x_i - x_j‖</span> <span class="eq-accent">=</span> <span class="eq-comment">Euclidean distance between two houses in feature space</span>
+  </div>
+
+  <h3>Operations That Yield Insight</h3>
+
+  <h4>1. The Dot Product as Similarity</h4>
+  <p>The dot product <span class="inline-math">a · b = ‖a‖ ‖b‖ cos θ</span> measures how aligned two vectors are. In a recommendation system (think Netflix, Spotify, Amazon), each user is a vector of ratings and each item is a vector of attributes. The dot product between a user vector and an item vector is a <em>similarity score</em>. This is <strong>collaborative filtering</strong> — one of the most commercially valuable algorithms ever deployed — and it is nothing more than a repeated dot product over a large matrix.</p>
+
+  <h4>2. Matrix Multiplication as Batch Transformation</h4>
+  <p>When you multiply the data matrix <span class="inline-math">X</span> by a weight matrix <span class="inline-math">W</span>, you are simultaneously transforming every single data point. In a neural network, every layer is a matrix multiplication followed by a non-linear function. The entire forward pass of GPT-4 — a model with trillions of floating point values — is an enormously complex chain of matrix multiplications. The efficiency of modern hardware (GPUs, TPUs) is fundamentally designed around doing matrix multiplications extremely fast.</p>
+
+  <h4>3. The Norm as a Measure of Magnitude</h4>
+  <p>The L2 norm <span class="inline-math">‖x‖ = √(x₁² + x₂² + ... + xd²)</span> tells you the "size" or "magnitude" of a data vector. In machine learning, norms appear everywhere: in the loss function (Mean Squared Error is an L2 norm), in regularisation (Ridge regression penalises the L2 norm of weights, Lasso penalises the L1 norm), and in distance-based algorithms like K-Nearest Neighbours.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+      <span class="code-title">vectors_and_similarity.py</span>
+    </div>
+    <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Simulate a tiny data matrix: 5 houses, 3 features</span>
+<span class="cm"># [area_sqft, num_bedrooms, age_years]</span>
+X <span class="op">=</span> np.array([
+    [<span class="nm">1200</span>, <span class="nm">3</span>, <span class="nm">10</span>],
+    [<span class="nm">1800</span>, <span class="nm">4</span>, <span class="nm">5</span>],
+    [<span class="nm">800</span>,  <span class="nm">2</span>, <span class="nm">20</span>],
+    [<span class="nm">2200</span>, <span class="nm">5</span>, <span class="nm">2</span>],
+    [<span class="nm">1500</span>, <span class="nm">3</span>, <span class="nm">15</span>],
+], dtype=float)
+
+<span class="cm"># Normalise rows to unit vectors (direction matters, not magnitude)</span>
+norms <span class="op">=</span> np.<span class="fn">linalg.norm</span>(X, axis=<span class="nm">1</span>, keepdims=<span class="kw">True</span>)
+X_norm <span class="op">=</span> X / norms
+
+<span class="cm"># Cosine similarity matrix — dot product on unit vectors</span>
+sim_matrix <span class="op">=</span> X_norm <span class="op">@</span> X_norm.T
+<span class="fn">print</span>(<span class="st">"Cosine Similarity Matrix:"</span>)
+<span class="fn">print</span>(np.<span class="fn">round</span>(sim_matrix, <span class="nm">3</span>))
+
+<span class="cm"># Most similar house to house 0?</span>
+row0 <span class="op">=</span> sim_matrix[<span class="nm">0</span>].copy()
+row0[<span class="nm">0</span>] <span class="op">=</span> -<span class="nm">1</span>   <span class="cm"># exclude self</span>
+<span class="fn">print</span>(<span class="st">f"House 0's nearest neighbour: House {np.argmax(row0)}"</span>)</pre>
+  </div>
+
+  <h3>Real-World Applications</h3>
+  <div class="case-grid">
+    <div class="case-card">
+      <div class="case-icon">🏥</div>
+      <h4>Healthcare — Patient Similarity</h4>
+      <p>Each patient's lab results form a vector. Computing cosine similarity across thousands of patients lets clinicians find "patients like this one" — enabling personalised treatment protocols.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">📡</div>
+      <h4>IoT — Sensor Fusion</h4>
+      <p>A smart factory has hundreds of sensors. Each time-slice of readings is a vector. Matrix operations aggregate, filter, and compare these vectors to detect machinery faults in real time.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🔤</div>
+      <h4>NLP — Word Embeddings</h4>
+      <p>In models like Word2Vec and BERT, each word is a vector in 300 or 768 dimensions. "King − Man + Woman ≈ Queen" is a vector subtraction. Language understanding is linear algebra over embeddings.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🛒</div>
+      <h4>E-Commerce — Recommender Systems</h4>
+      <p>The user–item interaction matrix is factorised (decomposed) into two smaller matrices whose product approximates the original. Finding these factors is a matrix optimisation problem.</p>
+    </div>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-label">🔑 Key Insight</div>
+    The power of treating data as a matrix is that every insight becomes a <em>geometric operation</em>. Similarity is an angle. Distance is a magnitude. Transformation is a rotation or scaling. Geometry is intuitive; equations can then be attached to that intuition.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 2: LINEAR TRANSFORMATIONS
+═══════════════════════════════════════════════════════ -->
+<section id="linear-transforms">
+  <div class="section-label">Act Two</div>
+  <h2>Linear Transformations and Their Impact on Data</h2>
+
+  <p>A linear transformation is a function <span class="inline-math">T: ℝⁿ → ℝᵐ</span> that maps every vector in one space to a vector in another, while preserving the operations of addition and scalar multiplication. Every such transformation can be represented as a matrix multiplication: <span class="inline-math">T(x) = Ax</span>. But what does this <em>do</em> to data — geometrically, visually, practically?</p>
+
+  <h3>The Four Fundamental Actions</h3>
+  <div class="two-col">
+    <div>
+      <h4>Scaling</h4>
+      <p>Multiplying by a diagonal matrix stretches or squashes the data along axes. Standardising features before training an ML model (<span class="inline-math">z = (x − μ) / σ</span>) is a linear transformation — it scales the feature space so all dimensions have unit variance, preventing large-magnitude features from dominating the model.</p>
+    </div>
+    <div>
+      <h4>Rotation</h4>
+      <p>An orthogonal matrix <span class="inline-math">Q</span> (where <span class="inline-math">QQᵀ = I</span>) rotates the data cloud in space without distorting distances. PCA uses a rotation to align the data with its axes of maximum variance — more on this in Section 10.</p>
+    </div>
+    <div>
+      <h4>Projection</h4>
+      <p>Mapping a high-dimensional vector to a lower-dimensional subspace is a projection. Every dimensionality reduction technique — PCA, LDA, autoencoders — is, at its core, a carefully chosen projection that preserves the most important structure.</p>
+    </div>
+    <div>
+      <h4>Shearing</h4>
+      <p>Some transformations tilt the data cloud, changing the relationships between features. Understanding these shears helps interpret why some feature engineering steps distort or improve model performance.</p>
+    </div>
+  </div>
+
+  <h3>Neural Networks as Chains of Transformations</h3>
+  <p>A fully connected neural network is literally a sequence of linear transformations interleaved with non-linear activation functions:</p>
+
+  <div class="math-block" data-label="Forward Pass">
+    <span class="eq-var">h₁</span> <span class="eq-accent">=</span> <span class="eq-fn">σ</span>(<span class="eq-var">W₁</span><span class="eq-var">x</span> + <span class="eq-var">b₁</span>)    <span class="eq-comment">← Layer 1: linear transform + activation</span><br>
+    <span class="eq-var">h₂</span> <span class="eq-accent">=</span> <span class="eq-fn">σ</span>(<span class="eq-var">W₂</span><span class="eq-var">h₁</span> + <span class="eq-var">b₂</span>)   <span class="eq-comment">← Layer 2: transform the transformed</span><br>
+    <span class="eq-var">ŷ</span>  <span class="eq-accent">=</span> <span class="eq-fn">softmax</span>(<span class="eq-var">W₃</span><span class="eq-var">h₂</span> + <span class="eq-var">b₃</span>) <span class="eq-comment">← Output: class probabilities</span>
+  </div>
+
+  <p>Each weight matrix <span class="inline-math">Wₖ</span> is performing a linear transformation. The non-linearity (ReLU, sigmoid, tanh) between layers is what makes the network capable of learning curved decision boundaries. Without it, any number of stacked linear transformations would still be a single linear transformation — because the composition of linear maps is linear.</p>
+
+  <h3>The Transformer Architecture — Attention as a Transformation</h3>
+  <p>The most important neural architecture of the last decade, the Transformer (the "T" in GPT), uses a mechanism called <strong>self-attention</strong>. In it, each token in a sequence is transformed into three vectors — Query, Key, and Value — via three different linear transformations. The attention scores are then dot products of queries and keys, normalised by a softmax, used to weight a sum of value vectors. The entire mechanism is a sophisticated composition of linear transformations. Understanding this is the first step to understanding why ChatGPT, Gemini, and Claude work the way they do.</p>
+
+  <div class="callout rust">
+    <div class="callout-label">🏭 IoT Application</div>
+    In predictive maintenance for industrial equipment, raw sensor signals (vibration, temperature, current) are transformed via filter matrices (a type of linear transformation) into feature representations that are much more informative — e.g., frequency domain features via the Fourier transform, which is itself a linear transformation encoded in a matrix called the DFT matrix.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 3: EIGENDECOMPOSITION
+═══════════════════════════════════════════════════════ -->
+<section id="eigendecomp">
+  <div class="section-label">Act Three</div>
+  <h2>Eigendecomposition: The Skeleton of a Transformation</h2>
+
+  <p>Among all the vectors in a space, there are certain special directions that a transformation simply stretches or compresses — it does not rotate them at all. These directions are called <strong>eigenvectors</strong>, and the factor by which they are stretched is the corresponding <strong>eigenvalue</strong>. Formally: if <span class="inline-math">Av = λv</span>, then <span class="inline-math">v</span> is an eigenvector of <span class="inline-math">A</span> with eigenvalue <span class="inline-math">λ</span>.</p>
+
+  <p>This is not a curiosity. The eigenvectors reveal the <em>natural axes</em> of a transformation — the bones and skeleton of what the matrix actually does. And eigendecomposition — <span class="inline-math">A = QΛQᵀ</span> — lets us write any symmetric matrix as a sum of rank-1 matrices, each scaled by its eigenvalue.</p>
+
+  <h3>Why This Makes Repeated Transformations Cheap</h3>
+  <p>Suppose you need to apply the same linear transformation <span class="inline-math">A</span> many times to a vector: <span class="inline-math">Aᵏx</span>. Without eigendecomposition, this requires <span class="inline-math">k</span> matrix multiplications, each costing <span class="inline-math">O(n³)</span> operations. With eigendecomposition:</p>
+
+  <div class="math-block" data-label="Power via Eigendecomposition">
+    <span class="eq-var">A</span> <span class="eq-accent">=</span> <span class="eq-var">Q</span><span class="eq-var">Λ</span><span class="eq-var">Q</span><span class="eq-accent">⁻¹</span><br>
+    <span class="eq-var">Aᵏ</span> <span class="eq-accent">=</span> <span class="eq-var">Q</span><span class="eq-var">Λᵏ</span><span class="eq-var">Q</span><span class="eq-accent">⁻¹</span>  <span class="eq-comment">← λᵢ raised to power k; O(n) not O(n³·k)</span><br><br>
+    <span class="eq-comment">Λᵏ = diag(λ₁ᵏ, λ₂ᵏ, ..., λₙᵏ)</span>  <span class="eq-comment">← trivial to compute</span>
+  </div>
+
+  <p>Raising a diagonal matrix to a power is trivial — just raise each diagonal entry. This is why eigendecomposition matters profoundly for any algorithm that involves repeated transformations: Markov chains, PageRank, recurrent neural network dynamics, graph-based algorithms.</p>
+
+  <h3>The Spectrum of a Matrix</h3>
+  <p>The set of all eigenvalues is called the <strong>spectrum</strong> of a matrix. It carries deep information:</p>
+  <ul>
+    <li>A <strong>positive definite</strong> matrix (all eigenvalues positive) corresponds to a transformation that stretches everything — used in covariance matrices, which must be positive semidefinite.</li>
+    <li>The <strong>largest eigenvalue</strong> governs the long-run behaviour of a linear dynamical system — whether it explodes, decays, or oscillates.</li>
+    <li>The <strong>condition number</strong> (ratio of largest to smallest eigenvalue) tells you how numerically ill-conditioned a system is — crucial for stable training of neural networks.</li>
+  </ul>
+
+  <h3>Google PageRank: Eigenvectors at Internet Scale</h3>
+  <p>Google's original search algorithm, PageRank, assigns importance scores to web pages. The importance vector is the <strong>dominant eigenvector</strong> of a matrix encoding the link structure of the entire web. Billions of pages, one matrix, one eigenvector. The internet is ranked by linear algebra.</p>
+
+  <h3>Spectral Graph Theory in IoT Networks</h3>
+  <p>In an IoT network of connected sensors, the graph Laplacian matrix encodes the network topology. Its eigenvalues reveal the number of connected components, the speed of information diffusion, and the optimal clustering of sensors. Graph Neural Networks (GNNs), which operate on sensor networks, smart grids, and molecular structures, are built entirely on spectral graph theory — on eigenvalues and eigenvectors of graph matrices.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+      <span class="code-title">eigendecomposition_demo.py</span>
+    </div>
+    <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Symmetric covariance-like matrix</span>
+A <span class="op">=</span> np.array([[<span class="nm">4</span>, <span class="nm">2</span>, <span class="nm">1</span>],
+              [<span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">1</span>],
+              [<span class="nm">1</span>, <span class="nm">1</span>, <span class="nm">2</span>]])
+
+eigenvalues, eigenvectors <span class="op">=</span> np.<span class="fn">linalg.eigh</span>(A)
+
+<span class="fn">print</span>(<span class="st">"Eigenvalues (spectrum):"</span>, np.<span class="fn">round</span>(eigenvalues, <span class="nm">4</span>))
+<span class="fn">print</span>(<span class="st">"Eigenvectors (columns):"</span>)
+<span class="fn">print</span>(np.<span class="fn">round</span>(eigenvectors, <span class="nm">4</span>))
+
+<span class="cm"># Reconstruct A from eigendecomposition</span>
+Q, Lambda <span class="op">=</span> eigenvectors, np.<span class="fn">diag</span>(eigenvalues)
+A_reconstructed <span class="op">=</span> Q <span class="op">@</span> Lambda <span class="op">@</span> Q.T
+<span class="fn">print</span>(<span class="st">"\nReconstruction error:"</span>, np.<span class="fn">round</span>(np.<span class="fn">linalg.norm</span>(A - A_reconstructed), <span class="nm">10</span>))
+
+<span class="cm"># Variance explained by each eigenvector</span>
+total <span class="op">=</span> eigenvalues.<span class="fn">sum</span>()
+variance_explained <span class="op">=</span> eigenvalues / total
+<span class="fn">print</span>(<span class="st">"\nVariance explained (%):"</span>, np.<span class="fn">round</span>(variance_explained * <span class="nm">100</span>, <span class="nm">2</span>))</pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 4: FUNCTIONS
+═══════════════════════════════════════════════════════ -->
+<section id="functions">
+  <div class="section-label">Act Four</div>
+  <h2>Functions That Model Real-World Data</h2>
+
+  <p>Before a machine can learn from data, a human must choose an appropriate mathematical model — a <em>function class</em> — that could plausibly have generated the data. This choice is one of the most consequential decisions in applied machine learning, and it requires understanding the qualitative behaviour of different types of functions.</p>
+
+  <h3>A Taxonomy of Functions in AI/ML</h3>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-label">Linear & Affine</div>
+      <div class="tl-title">f(x) = mx + b and f(x) = Wx + b</div>
+      <div class="tl-body">The building block of all neural networks. Used in Linear Regression, Logistic Regression (with sigmoid), and as layers in deep networks. Linear functions cannot model curves, but they are the substrate on which all more complex functions are built.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Polynomial</div>
+      <div class="tl-title">f(x) = aₙxⁿ + ... + a₁x + a₀</div>
+      <div class="tl-body">Used in polynomial regression to capture non-linear trends. However, high-degree polynomials overfit dramatically — this is a lesson in the bias-variance tradeoff. Kernel methods (SVMs with polynomial kernels) use them implicitly in high dimensions.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Exponential & Logarithmic</div>
+      <div class="tl-title">f(x) = eˣ, f(x) = ln(x)</div>
+      <div class="tl-body">The exponential function appears in the softmax (converting neural network outputs to probabilities), in the Gaussian distribution, and in information-theoretic losses like cross-entropy. The log is used to convert products to sums — critical for numerical stability in probabilistic models and for defining entropy.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Sigmoid & Logistic</div>
+      <div class="tl-title">σ(x) = 1 / (1 + e⁻ˣ)</div>
+      <div class="tl-body">The canonical activation function for binary classification. Its output lies in (0,1) — interpretable as a probability. Appears in logistic regression, LSTMs (as gate activations), and attention mechanisms. Its saturation at extremes is also the source of the vanishing gradient problem.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">ReLU & Variants</div>
+      <div class="tl-title">f(x) = max(0, x)</div>
+      <div class="tl-body">The most commonly used activation function in modern deep learning. It is piecewise linear, computationally cheap, and avoids the vanishing gradient problem that plagued sigmoid-based networks. Variants include Leaky ReLU, GELU, and Swish — the last two used in transformers.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Sinusoidal & Fourier</div>
+      <div class="tl-title">f(x) = A sin(ωx + φ)</div>
+      <div class="tl-body">Time-series data from IoT sensors (vibration, electrical signal, ECG) often has periodic structure. Fourier decomposition represents any signal as a sum of sinusoids. In transformers, positional encodings use sinusoidal functions to inject sequence-position information.</div>
+    </div>
+  </div>
+
+  <h3>Loss Functions: Functions That Teach Machines</h3>
+  <p>Every machine learning model is trained by minimising a <strong>loss function</strong> — a function that measures the discrepancy between predictions and reality. The choice of loss function defines what the model learns to optimise:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Loss Function</th>
+        <th>Formula</th>
+        <th>Used For</th>
+        <th>Underlying Function Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Mean Squared Error</td>
+        <td>½ Σ(ŷ−y)²</td>
+        <td>Regression</td>
+        <td>Polynomial (quadratic)</td>
+      </tr>
+      <tr>
+        <td>Binary Cross-Entropy</td>
+        <td>−[y log ŷ + (1−y) log(1−ŷ)]</td>
+        <td>Classification</td>
+        <td>Logarithmic</td>
+      </tr>
+      <tr>
+        <td>Categorical Cross-Entropy</td>
+        <td>−Σ yₖ log ŷₖ</td>
+        <td>Multi-class</td>
+        <td>Logarithmic + Softmax</td>
+      </tr>
+      <tr>
+        <td>Hinge Loss</td>
+        <td>max(0, 1 − y·ŷ)</td>
+        <td>SVM</td>
+        <td>ReLU-like piecewise linear</td>
+      </tr>
+      <tr>
+        <td>KL Divergence</td>
+        <td>Σ p log(p/q)</td>
+        <td>VAEs, language models</td>
+        <td>Logarithmic + probabilistic</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 5: DERIVATIVES
+═══════════════════════════════════════════════════════ -->
+<section id="derivatives">
+  <div class="section-label">Act Five</div>
+  <h2>Derivatives and Their Meaning in Machine Learning</h2>
+
+  <p>The derivative is the mathematical formalisation of a simple intuition: <em>how much does the output change when the input changes by a tiny amount?</em> Formally, <span class="inline-math">f'(x) = lim_{h→0} [f(x+h) − f(x)] / h</span>. But in machine learning, the derivative is the engine of learning itself.</p>
+
+  <h3>The Derivative as a Signal</h3>
+  <p>When you train a neural network, you want to adjust the model's parameters so that the loss function decreases. The derivative of the loss with respect to each parameter tells you exactly this: it is the <em>signal</em> that tells each parameter which direction to move in. A positive derivative on parameter <span class="inline-math">w</span> means increasing <span class="inline-math">w</span> would increase the loss — so you should decrease <span class="inline-math">w</span>. A negative derivative means the opposite. The magnitude tells you by how much.</p>
+
+  <h3>Backpropagation: The Chain Rule at Scale</h3>
+  <p>The algorithm that trains virtually every neural network ever deployed — backpropagation — is the <strong>chain rule of calculus</strong> applied recursively through the network's computational graph.</p>
+
+  <div class="math-block" data-label="Chain Rule">
+    <span class="eq-comment">If  L = f(g(h(x))),  then:</span><br><br>
+    <span class="eq-var">dL/dx</span> <span class="eq-accent">=</span> <span class="eq-var">dL/df</span> <span class="eq-accent">·</span> <span class="eq-var">df/dg</span> <span class="eq-accent">·</span> <span class="eq-var">dg/dh</span> <span class="eq-accent">·</span> <span class="eq-var">dh/dx</span>  <span class="eq-comment">← multiply local gradients</span><br><br>
+    <span class="eq-comment">Backprop does this for ALL parameters in O(forward pass cost)</span>
+  </div>
+
+  <p>This was the key insight of the 1986 backpropagation paper: computing all these partial derivatives efficiently using dynamic programming. Without the chain rule and its efficient computation, deep learning would be impossible.</p>
+
+  <h3>Derivatives of Key ML Functions</h3>
+
+  <div class="two-col">
+    <div>
+      <h4>Sigmoid</h4>
+      <div class="math-block" data-label="Derivative">
+        σ(x) = 1/(1+e⁻ˣ)<br>
+        <span class="eq-accent">σ'(x) = σ(x)(1 − σ(x))</span>
+      </div>
+      <p style="font-size:0.88rem">This elegant self-referential form makes the sigmoid particularly tractable. Note that at saturation (x → ±∞), σ'(x) → 0 — this causes the vanishing gradient problem.</p>
+    </div>
+    <div>
+      <h4>ReLU</h4>
+      <div class="math-block" data-label="Derivative">
+        f(x) = max(0, x)<br>
+        <span class="eq-accent">f'(x) = 1 if x > 0, else 0</span>
+      </div>
+      <p style="font-size:0.88rem">The derivative is 1 for positive inputs and 0 for negative — a simple indicator function. This is why ReLU avoids the vanishing gradient problem: gradients don't shrink as they pass through active neurons.</p>
+    </div>
+  </div>
+
+  <h3>Automatic Differentiation</h3>
+  <p>Modern deep learning libraries (PyTorch, TensorFlow, JAX) implement <strong>automatic differentiation</strong> — a system that computes derivatives of arbitrary programs exactly, not via symbolic algebra or numerical approximation. This is built on the chain rule applied to a directed acyclic computational graph. When you call <span class="inline-math">loss.backward()</span> in PyTorch, you are triggering a traversal of this graph that computes the gradient of the loss with respect to every trainable parameter in the entire network — potentially millions of them — in a single backward pass.</p>
+
+  <div class="callout">
+    <div class="callout-label">💡 Interpretation</div>
+    The gradient vector ∇L(w) points in the direction of <em>steepest increase</em> of the loss function in parameter space. To train the model, we walk in the <em>opposite</em> direction. This is gradient descent — the subject of Section 9. The derivative is the compass; gradient descent is the journey.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 6: MAXIMA & MINIMA
+═══════════════════════════════════════════════════════ -->
+<section id="optim">
+  <div class="section-label">Act Six</div>
+  <h2>Maxima, Minima, and the Art of Optimisation</h2>
+
+  <p>Training a machine learning model is, at its core, an <strong>optimisation problem</strong>: find the parameter values that minimise the loss function. Every technique you learned for finding maxima and minima — setting derivatives to zero, second derivative tests, critical points — forms the conceptual foundation for the optimisation algorithms that power AI.</p>
+
+  <h3>The Fundamental Condition</h3>
+  <p>A necessary condition for a smooth function to have a local extremum at a point is that its derivative (or gradient, in the multivariable case) vanishes there. This is the <em>critical point condition</em>. In 1D: <span class="inline-math">f'(x*) = 0</span>. In nD: <span class="inline-math">∇f(x*) = 0</span>.</p>
+
+  <h3>Convex vs. Non-Convex Loss Landscapes</h3>
+  <p>Linear regression has a <strong>convex</strong> loss function — a bowl-shaped parabola with exactly one minimum. Setting the derivative to zero and solving gives the closed-form solution: <span class="inline-math">w* = (XᵀX)⁻¹Xᵀy</span>. This is the <em>Normal Equation</em>, and it is the exact minimum, found analytically.</p>
+
+  <p>Deep neural networks have <strong>non-convex</strong> loss landscapes — wildly complex surfaces with millions of saddle points, local minima, and flat regions. In these landscapes, we cannot solve <span class="inline-math">∇L = 0</span> analytically. Instead, we use iterative numerical optimisation methods, most importantly gradient descent and its variants.</p>
+
+  <h3>Beyond Basic Gradient Descent: Optimisation Algorithms</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Algorithm</th>
+        <th>Key Idea</th>
+        <th>Used In</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>SGD</td>
+        <td>Use gradient of a mini-batch instead of full dataset</td>
+        <td>Classic ML, PyTorch</td>
+      </tr>
+      <tr>
+        <td>Momentum</td>
+        <td>Accumulate velocity in gradient direction</td>
+        <td>Fast convergence in smooth regions</td>
+      </tr>
+      <tr>
+        <td>RMSProp</td>
+        <td>Adapt learning rate per-parameter based on magnitude</td>
+        <td>RNNs, non-stationary objectives</td>
+      </tr>
+      <tr>
+        <td>Adam</td>
+        <td>First + second moment estimates (momentum + RMSProp)</td>
+        <td>Transformers, CNNs, default choice</td>
+      </tr>
+      <tr>
+        <td>L-BFGS</td>
+        <td>Approximate inverse Hessian for second-order steps</td>
+        <td>Small models, classical ML</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>All of these are refinements on the single idea of following the gradient downhill. The second-order methods (like L-BFGS) also use the Hessian matrix — the matrix of second derivatives — to take smarter, more curved steps. The Hessian's eigenvalues tell you about the curvature of the loss landscape in different directions.</p>
+
+  <div class="callout teal">
+    <div class="callout-label">📦 Supply Chain Application</div>
+    Logistics companies (Amazon, DHL, Maersk) solve optimisation problems with millions of variables: delivery routes, warehouse locations, inventory levels. These are often non-convex, mixed-integer optimisation problems. The tools of calculus — gradients, curvature, constraint handling via Lagrange multipliers — underpin every solver used to make these decisions.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 7: INTEGRATION
+═══════════════════════════════════════════════════════ -->
+<section id="integration">
+  <div class="section-label">Act Seven</div>
+  <h2>Integration: Accumulation, Probability, and Area Under the Curve</h2>
+
+  <p>Integration is the calculus of accumulation. Where differentiation asks "how fast is this changing?", integration asks "how much has accumulated in total?" This distinction maps precisely onto two different kinds of questions in data science: <em>what is the distribution of this variable?</em> (answered by probability density functions and their integrals) and <em>how well does this model perform across all operating points?</em> (answered by metrics that integrate performance curves).</p>
+
+  <h3>Probability Distributions as Integrals</h3>
+  <p>A probability density function (PDF) <span class="inline-math">p(x)</span> is defined by two conditions: <span class="inline-math">p(x) ≥ 0</span> for all <span class="inline-math">x</span>, and <span class="inline-math">∫ p(x) dx = 1</span>. Every probability statement about a continuous random variable is an integral of its PDF. The expected value of a function under a distribution — the foundation of risk, loss, and Bayesian inference — is an integral:</p>
+
+  <div class="math-block" data-label="Expected Value">
+    <span class="eq-var">E[f(X)]</span> <span class="eq-accent">=</span> <span class="eq-accent">∫</span> f(x) p(x) <span class="eq-accent">dx</span><br><br>
+    <span class="eq-comment">Expected loss:  E[L(ŷ, y)] = ∫∫ L(ŷ, y) p(x,y) dx dy</span><br>
+    <span class="eq-comment">This is what gradient descent estimates with a mini-batch!</span>
+  </div>
+
+  <h3>The AUC-ROC: Integration in Model Evaluation</h3>
+  <p>The Area Under the ROC Curve (AUC-ROC) is one of the most widely used metrics for binary classifiers. It is, literally, an integral — the area under the curve plotting True Positive Rate against False Positive Rate as the classification threshold varies. A model with AUC = 1.0 is perfect; AUC = 0.5 is random. The integral summarises performance across all possible operating points, not just at one chosen threshold.</p>
+
+  <h3>Bayesian Inference: Learning via Integration</h3>
+  <p>Bayesian machine learning is built entirely on integrals. Bayes' theorem:</p>
+
+  <div class="math-block" data-label="Bayes Theorem">
+    <span class="eq-var">p(θ | X)</span> <span class="eq-accent">=</span> p(X | θ) p(θ) / p(X)<br><br>
+    <span class="eq-var">p(X)</span> <span class="eq-accent">=</span> <span class="eq-accent">∫</span> p(X | θ) p(θ) <span class="eq-accent">dθ</span>   <span class="eq-comment">← marginal likelihood; often intractable!</span>
+  </div>
+
+  <p>The denominator <span class="inline-math">p(X)</span> requires integrating over all possible parameter values — an often infinite-dimensional integral. Much of modern Bayesian deep learning is devoted to approximating this integral efficiently (via variational inference, Markov Chain Monte Carlo, or Laplace approximations).</p>
+
+  <h3>Integration in IoT: Signal Processing</h3>
+  <p>In a motion sensor (accelerometer), the integral of acceleration gives velocity; the double integral gives position. GPS-denied navigation systems (used in drones, submarines, guided missiles) use numerical integration of inertial sensor data — accumulated over time — to estimate position. This is called Dead Reckoning, and every integral error compounds over time — which is why understanding both the power and the limitations of numerical integration matters enormously in embedded systems.</p>
+
+  <div class="callout">
+    <div class="callout-label">📊 Practical Python: Numerical Integration</div>
+    <code>from scipy import integrate<br>
+    result, error = integrate.quad(lambda x: x**2 * np.exp(-x**2), 0, np.inf)</code><br><br>
+    SciPy's <code>quad</code> function uses adaptive Gaussian quadrature — a sophisticated numerical integration technique that estimates error and refines the approximation adaptively. This is used in everything from option pricing (Black-Scholes model) to computing normalisation constants in probabilistic models.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 8: MULTIVARIABLE FUNCTIONS
+═══════════════════════════════════════════════════════ -->
+<section id="multivariable">
+  <div class="section-label">Act Eight</div>
+  <h2>Multivariable Functions: High-Dimensional Landscapes</h2>
+
+  <p>Real-world ML models do not have one or two parameters. They have millions — sometimes hundreds of billions. The loss function is a function of all these parameters simultaneously: <span class="inline-math">L: ℝᵈ → ℝ</span>, a scalar-valued function of a high-dimensional vector. Multivariable calculus is the mathematics of navigating this landscape.</p>
+
+  <h3>Visualising High-Dimensional Functions</h3>
+  <p>While we cannot directly visualise functions in millions of dimensions, several techniques provide insight:</p>
+
+  <div class="two-col">
+    <div>
+      <h4>Contour Plots</h4>
+      <p>For 2D parameter spaces, contour plots show level sets — curves along which the function has equal value. The gradient is always perpendicular to contour lines, pointing toward higher values. Watching a gradient descent trajectory on a contour plot is one of the most illuminating ways to understand the algorithm.</p>
+    </div>
+    <div>
+      <h4>Loss Landscape Visualisation</h4>
+      <p>Researchers visualise neural network loss landscapes by picking two random directions in parameter space and plotting the loss over a 2D grid. These visualisations reveal the dramatic difference between flat, well-conditioned landscapes (ResNets with skip connections) and rough, chaotic ones (plain deep networks).</p>
+    </div>
+    <div>
+      <h4>Heatmaps of Attention</h4>
+      <p>In transformers, attention scores form a matrix (a 2D function of token positions). Visualising this heatmap shows which tokens attend to which — a direct window into what the model is "thinking about."</p>
+    </div>
+    <div>
+      <h4>t-SNE and UMAP Embeddings</h4>
+      <p>These algorithms project high-dimensional data (e.g., the 768-dimensional embeddings of BERT) into 2D for visualisation, preserving local neighbourhood structure. They are non-linear dimensionality reduction tools built on multivariable optimisation.</p>
+    </div>
+  </div>
+
+  <h3>Partial Derivatives: Taking One Dimension at a Time</h3>
+  <p>The partial derivative <span class="inline-math">∂f/∂xᵢ</span> measures how the function changes as we vary the <span class="inline-math">i</span>-th input while holding all others constant. This is exactly what the backpropagation algorithm computes: the partial derivative of the loss with respect to each individual weight, one at a time — while the chain rule efficiently couples all these computations together.</p>
+
+  <div class="callout rust">
+    <div class="callout-label">🌡️ IoT: Multivariable Physical Models</div>
+    In a smart building energy management system, the thermal comfort of a room is a function of temperature, humidity, air velocity, and radiant temperature — a 4+ variable function. The partial derivative with respect to each variable tells the HVAC system how sensitive comfort is to each control action, enabling optimal multi-variable control. This is Model Predictive Control (MPC), one of the most important control frameworks in industrial IoT.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 9: GRADIENT DESCENT
+═══════════════════════════════════════════════════════ -->
+<section id="grad-descent">
+  <div class="section-label">Act Nine</div>
+  <h2>Gradient Descent: The Algorithm That Trains AI</h2>
+
+  <p>We have arrived at one of the two capstone algorithms — the one that <em>powers learning itself</em>. Gradient descent is disarmingly simple in concept and extraordinarily powerful in practice. It is the reason every major AI model in the world was able to be trained.</p>
+
+  <h3>The Algorithm</h3>
+  <p>Given a loss function <span class="inline-math">L(w)</span> and a starting point <span class="inline-math">w₀</span>, gradient descent iteratively updates:</p>
+
+  <div class="math-block" data-label="Update Rule">
+    <span class="eq-var">w_{t+1}</span> <span class="eq-accent">=</span> <span class="eq-var">wₜ</span> <span class="eq-accent">−</span> <span class="eq-var">η</span> <span class="eq-accent">·</span> <span class="eq-accent">∇</span><span class="eq-var">L</span>(<span class="eq-var">wₜ</span>)<br><br>
+    <span class="eq-comment">η  = learning rate (step size hyperparameter)</span><br>
+    <span class="eq-comment">∇L = gradient vector (computed by backprop)</span><br>
+    <span class="eq-comment">The update subtracts a scaled gradient → moves downhill</span>
+  </div>
+
+  <h3>The Mathematics Behind the Update</h3>
+  <p>Why does moving in the negative gradient direction decrease the loss? This follows directly from the first-order Taylor expansion of <span class="inline-math">L</span> around the current point:</p>
+
+  <div class="math-block" data-label="Taylor Expansion">
+    L(w + δ) ≈ L(w) + ∇L(w)ᵀ δ  +  O(‖δ‖²)<br><br>
+    <span class="eq-comment">Set δ = −η ∇L(w):</span><br>
+    L(w − η∇L) ≈ L(w) − η ‖∇L(w)‖²<br><br>
+    <span class="eq-accent">≤ L(w)</span>   <span class="eq-comment">← the loss decreases! (for small enough η)</span>
+  </div>
+
+  <p>The key insight: the squared norm of the gradient is always non-negative, so subtracting <span class="inline-math">η ‖∇L‖²</span> from the loss is guaranteed to decrease it (as long as the learning rate is small enough and we haven't reached a critical point). This is the mathematical guarantee behind gradient descent.</p>
+
+  <h3>The Learning Rate: The Most Important Hyperparameter</h3>
+  <p>The learning rate <span class="inline-math">η</span> controls the step size. Too large, and the updates overshoot — the algorithm oscillates or diverges. Too small, and convergence is impossibly slow. Finding the right learning rate is one of the most consequential practical challenges in training deep learning models.</p>
+
+  <ul>
+    <li><strong>Learning Rate Schedules:</strong> Warm-up phases (used in transformers) start with a small learning rate that ramps up before decaying. Cosine annealing reduces the learning rate following a cosine curve.</li>
+    <li><strong>Adaptive Methods:</strong> Adam and RMSProp adapt the learning rate per-parameter based on gradient history, largely solving this problem for practitioners.</li>
+    <li><strong>Learning Rate Finders:</strong> A technique that tests many learning rates in a short run to find the optimal regime before full training begins.</li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+      <span class="code-title">gradient_descent_from_scratch.py</span>
+    </div>
+    <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="cm"># 2D loss landscape: L(w1, w2) = w1² + 5·w2²  (elliptical bowl)</span>
+<span class="kw">def</span> <span class="fn">loss</span>(w):
+    <span class="kw">return</span> w[<span class="nm">0</span>]**<span class="nm">2</span> + <span class="nm">5</span> * w[<span class="nm">1</span>]**<span class="nm">2</span>
+
+<span class="kw">def</span> <span class="fn">gradient</span>(w):
+    <span class="kw">return</span> np.array([<span class="nm">2</span> * w[<span class="nm">0</span>], <span class="nm">10</span> * w[<span class="nm">1</span>]])
+
+<span class="cm"># Run gradient descent</span>
+w <span class="op">=</span> np.array([<span class="nm">4.0</span>, <span class="nm">3.0</span>])   <span class="cm"># starting point</span>
+eta <span class="op">=</span> <span class="nm">0.08</span>                 <span class="cm"># learning rate</span>
+path <span class="op">=</span> [w.copy()]
+
+<span class="kw">for</span> step <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">40</span>):
+    grad <span class="op">=</span> <span class="fn">gradient</span>(w)
+    w <span class="op">=</span> w - eta <span class="op">*</span> grad    <span class="cm"># gradient descent update</span>
+    path.append(w.copy())
+    <span class="kw">if</span> np.<span class="fn">linalg.norm</span>(grad) <span class="op">&lt;</span> <span class="nm">1e-6</span>:
+        <span class="fn">print</span>(<span class="st">f"Converged at step {step}"</span>)
+        <span class="kw">break</span>
+
+path <span class="op">=</span> np.array(path)
+<span class="fn">print</span>(<span class="st">f"Final w: {np.round(w, 6)}, Loss: {loss(w):.8f}"</span>)
+
+<span class="cm"># Visualise trajectory on contour plot</span>
+w1s <span class="op">=</span> np.<span class="fn">linspace</span>(-<span class="nm">5</span>, <span class="nm">5</span>, <span class="nm">300</span>)
+w2s <span class="op">=</span> np.<span class="fn">linspace</span>(-<span class="nm">4</span>, <span class="nm">4</span>, <span class="nm">300</span>)
+W1, W2 <span class="op">=</span> np.<span class="fn">meshgrid</span>(w1s, w2s)
+Z <span class="op">=</span> W1**<span class="nm">2</span> + <span class="nm">5</span> * W2**<span class="nm">2</span>
+
+plt.<span class="fn">figure</span>(figsize=(<span class="nm">8</span>, <span class="nm">6</span>))
+plt.<span class="fn">contourf</span>(W1, W2, Z, levels=<span class="nm">30</span>, cmap=<span class="st">'YlOrRd'</span>)
+plt.<span class="fn">contour</span>(W1, W2, Z, levels=<span class="nm">15</span>, colors=<span class="st">'white'</span>, linewidths=<span class="nm">0.5</span>)
+plt.<span class="fn">plot</span>(path[:,<span class="nm">0</span>], path[:,<span class="nm">1</span>], <span class="st">'b.-'</span>, markersize=<span class="nm">5</span>, label=<span class="st">'GD path'</span>)
+plt.<span class="fn">scatter</span>(*path[<span class="nm">0</span>], color=<span class="st">'blue'</span>, s=<span class="nm">80</span>, zorder=<span class="nm">5</span>, label=<span class="st">'Start'</span>)
+plt.<span class="fn">scatter</span>(*path[-<span class="nm">1</span>], color=<span class="st">'green'</span>, s=<span class="nm">80</span>, zorder=<span class="nm">5</span>, label=<span class="st">'End'</span>)
+plt.<span class="fn">legend</span>()
+plt.<span class="fn">title</span>(<span class="st">'Gradient Descent Trajectory'</span>)
+plt.<span class="fn">savefig</span>(<span class="st">'gd_trajectory.png'</span>, dpi=<span class="nm">150</span>, bbox_inches=<span class="st">'tight'</span>)</pre>
+  </div>
+
+  <h3>From Single Weights to Billion-Parameter Models</h3>
+  <p>The exact same update rule above — <span class="inline-math">w ← w − η∇L(w)</span> — is applied to the billions of parameters in GPT-4, LLaMA, Gemini, and every other large language model in existence. The mathematical principle is identical to what you just computed. The engineering challenge is doing it efficiently across thousands of GPUs, with batches of data, with careful numerics — but the mathematical heart is unchanged. When you understood gradient descent, you understood how intelligence is learned from data.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 10: PCA
+═══════════════════════════════════════════════════════ -->
+<section id="pca">
+  <div class="section-label">Act Ten</div>
+  <h2>Principal Component Analysis: Linear Algebra Meets Statistics</h2>
+
+  <p>Principal Component Analysis (PCA) is the capstone of the linear algebra arc — the algorithm where vectors, matrices, norms, linear transformations, and eigendecomposition all converge into a single, beautiful, deeply useful method. It is one of the most important algorithms in all of data science, and understanding it fully requires everything you have learned.</p>
+
+  <h3>The Problem PCA Solves</h3>
+  <p>High-dimensional data is hard to visualise, expensive to store, and contains redundancy (correlated features). PCA finds a new coordinate system — one where the axes are aligned with the <em>directions of maximum variance</em> in the data. These new axes are the principal components, and we can project the data onto just the first few of them without losing much information.</p>
+
+  <h3>The Algorithm, Step by Step</h3>
+
+  <div class="pipeline">
+    <div class="pipe-step"><strong>Step 1</strong>Centre the data: subtract the mean of each feature</div>
+    <div class="pipe-step"><strong>Step 2</strong>Compute the covariance matrix C = XᵀX / (n−1)</div>
+    <div class="pipe-step"><strong>Step 3</strong>Eigendecompose C = QΛQᵀ</div>
+    <div class="pipe-step"><strong>Step 4</strong>Sort eigenvectors by eigenvalue (descending)</div>
+    <div class="pipe-step"><strong>Step 5</strong>Project: Z = XQ_k (use top k eigenvectors)</div>
+  </div>
+
+  <h3>Why Eigenvectors of the Covariance Matrix?</h3>
+  <p>The covariance matrix <span class="inline-math">C = XᵀX/(n−1)</span> encodes how features vary together. Its eigenvectors are exactly the directions in feature space where variance is maximised (or minimised). The corresponding eigenvalue is the variance in that direction. So the first principal component (eigenvector with the largest eigenvalue) is the single direction that captures the most variance in the dataset.</p>
+
+  <div class="math-block" data-label="PCA Objective">
+    <span class="eq-comment">Find unit vector v that maximises the projected variance:</span><br><br>
+    <span class="eq-var">v*</span> <span class="eq-accent">=</span> argmax_v  vᵀ<span class="eq-var">C</span>v   subject to  ‖v‖ = 1<br><br>
+    <span class="eq-comment">By Lagrange multipliers, this is equivalent to:</span><br>
+    <span class="eq-var">C</span><span class="eq-var">v</span> <span class="eq-accent">=</span> <span class="eq-var">λ</span><span class="eq-var">v</span>   <span class="eq-comment">← eigenvalue equation!</span>
+  </div>
+
+  <p>This is the elegant mathematical moment: the optimisation problem for finding the direction of maximum variance <em>is exactly</em> the eigenvalue problem. The two arcs — linear algebra and calculus/optimisation — meet in a single equation.</p>
+
+  <h3>Singular Value Decomposition (SVD): The Generalisation</h3>
+  <p>In practice, PCA is computed via SVD rather than eigendecomposition of the covariance matrix. SVD decomposes any matrix <span class="inline-math">X = UΣVᵀ</span>, where <span class="inline-math">U</span> and <span class="inline-math">V</span> are orthogonal and <span class="inline-math">Σ</span> is diagonal with non-negative entries (singular values). The columns of <span class="inline-math">V</span> are the principal components; the singular values squared are proportional to eigenvalues of the covariance matrix. SVD is numerically more stable and works directly on the data matrix, not the covariance matrix.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+      <span class="code-title">pca_from_scratch.py</span>
+    </div>
+    <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_digits
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="cm"># Load the digits dataset: 1797 images, 64 features (8×8 pixels)</span>
+digits <span class="op">=</span> <span class="fn">load_digits</span>()
+X, y <span class="op">=</span> digits.data, digits.target  <span class="cm"># X: (1797, 64)</span>
+
+<span class="cm"># ── PCA from scratch ──────────────────────────────────</span>
+<span class="cm"># Step 1: Centre the data</span>
+X_c <span class="op">=</span> X - X.<span class="fn">mean</span>(axis=<span class="nm">0</span>)
+
+<span class="cm"># Step 2: Compute covariance matrix (64×64)</span>
+C <span class="op">=</span> (X_c.T <span class="op">@</span> X_c) / (X_c.shape[<span class="nm">0</span>] - <span class="nm">1</span>)
+
+<span class="cm"># Step 3: Eigendecompose</span>
+eigenvalues, eigenvectors <span class="op">=</span> np.<span class="fn">linalg.eigh</span>(C)
+
+<span class="cm"># Step 4: Sort descending</span>
+idx <span class="op">=</span> np.<span class="fn">argsort</span>(eigenvalues)[::-<span class="nm">1</span>]
+eigenvalues, eigenvectors <span class="op">=</span> eigenvalues[idx], eigenvectors[:, idx]
+
+<span class="cm"># Variance explained</span>
+var_exp <span class="op">=</span> eigenvalues / eigenvalues.<span class="fn">sum</span>()
+cum_var <span class="op">=</span> np.<span class="fn">cumsum</span>(var_exp)
+<span class="fn">print</span>(<span class="st">f"Components for 90% variance: {(cum_var >= 0.90).argmax() + 1}"</span>)
+
+<span class="cm"># Step 5: Project onto first 2 PCs for visualisation</span>
+Z <span class="op">=</span> X_c <span class="op">@</span> eigenvectors[:, :<span class="nm">2</span>]  <span class="cm"># (1797, 2)</span>
+
+plt.<span class="fn">figure</span>(figsize=(<span class="nm">9</span>, <span class="nm">7</span>))
+scatter <span class="op">=</span> plt.<span class="fn">scatter</span>(Z[:, <span class="nm">0</span>], Z[:, <span class="nm">1</span>], c=y, cmap=<span class="st">'tab10'</span>, 
+                      alpha=<span class="nm">0.6</span>, s=<span class="nm">15</span>)
+plt.<span class="fn">colorbar</span>(scatter, label=<span class="st">'Digit Class'</span>)
+plt.<span class="fn">title</span>(<span class="st">'PCA of Digits Dataset (64D → 2D)'</span>)
+plt.<span class="fn">xlabel</span>(<span class="st">'First Principal Component'</span>)
+plt.<span class="fn">ylabel</span>(<span class="st">'Second Principal Component'</span>)
+plt.<span class="fn">savefig</span>(<span class="st">'pca_digits.png'</span>, dpi=<span class="nm">150</span>, bbox_inches=<span class="st">'tight'</span>)</pre>
+  </div>
+
+  <h3>PCA in the Real World</h3>
+  <div class="case-grid">
+    <div class="case-card">
+      <div class="case-icon">🧬</div>
+      <h4>Genomics</h4>
+      <p>Human genome studies measure millions of SNPs per person. PCA reduces these to a handful of principal components that capture ancestry — enabling population structure analysis and removing confounders from genome-wide association studies.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">📸</div>
+      <h4>Facial Recognition (Eigenfaces)</h4>
+      <p>The original Eigenfaces algorithm (1991) applied PCA to a dataset of face images. Each face is a vector in pixel space; the principal components are "eigenfaces." New faces are projected onto this basis for recognition — a direct application of eigendecomposition to vision.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">📊</div>
+      <h4>Finance — Factor Models</h4>
+      <p>In quantitative finance, the returns of hundreds of stocks are explained by a small number of latent factors (market, sector, momentum). PCA on the returns covariance matrix extracts these factors — this is the basis of Statistical Arbitrage strategies.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🏭</div>
+      <h4>Industrial IoT — Anomaly Detection</h4>
+      <p>Manufacturing equipment with 200+ sensors: PCA reduces these to 10–15 principal components. Anomalies appear as points far from the PCA subspace (high reconstruction error). This is widely used for predictive maintenance in semiconductor fabs, power plants, and automotive manufacturing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 11: SYNTHESIS
+═══════════════════════════════════════════════════════ -->
+<section id="synthesis">
+  <div class="section-label">Act Eleven — Grand Finale</div>
+  <h2>The Grand Synthesis: Everything You Know, Unified</h2>
+
+  <p>We have covered eleven acts. Now let us stand back and see the whole stage at once — the complete, unified picture of where mathematics lives inside modern AI systems. And then, let us look forward: what you can do with this knowledge, and where it leads.</p>
+
+  <h3>The Complete ML Pipeline — Mathematics at Every Stage</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Pipeline Stage</th>
+        <th>Mathematical Concept</th>
+        <th>Technique / Algorithm</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Data Representation</td>
+        <td>Vectors & Matrices</td>
+        <td>Feature matrices, embeddings, tokenisation</td>
+      </tr>
+      <tr>
+        <td>Feature Engineering</td>
+        <td>Linear Transformations, Norms</td>
+        <td>Scaling, normalisation, kernel methods</td>
+      </tr>
+      <tr>
+        <td>Dimensionality Reduction</td>
+        <td>Eigendecomposition, SVD</td>
+        <td>PCA, LDA, autoencoders, t-SNE</td>
+      </tr>
+      <tr>
+        <td>Model Architecture</td>
+        <td>Composition of Linear Maps + Functions</td>
+        <td>Neural network layers, attention mechanisms</td>
+      </tr>
+      <tr>
+        <td>Loss Function Design</td>
+        <td>Functions, Probability Theory, Integration</td>
+        <td>MSE, cross-entropy, KL divergence, ELBO</td>
+      </tr>
+      <tr>
+        <td>Model Training</td>
+        <td>Partial Derivatives, Chain Rule, Gradient</td>
+        <td>Backpropagation, automatic differentiation</td>
+      </tr>
+      <tr>
+        <td>Optimisation</td>
+        <td>Multivariable Calculus, Gradient Descent</td>
+        <td>Adam, SGD, momentum, learning rate schedules</td>
+      </tr>
+      <tr>
+        <td>Model Evaluation</td>
+        <td>Integration, Probability</td>
+        <td>AUC-ROC, Bayesian model selection, information criteria</td>
+      </tr>
+      <tr>
+        <td>Uncertainty Quantification</td>
+        <td>Multivariate Distributions, Integration</td>
+        <td>Monte Carlo methods, variational inference</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>The Intersection of Your Topics with Emerging Fields</h3>
+
+  <div class="case-grid">
+    <div class="case-card">
+      <div class="case-icon">🧠</div>
+      <h4>Large Language Models</h4>
+      <p>Transformers are chains of linear transformations (attention + feedforward layers), trained via gradient descent with backpropagation, operating on token embedding vectors. Every concept you have learned is inside GPT.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🤖</div>
+      <h4>Reinforcement Learning</h4>
+      <p>The value function and policy are multivariable functions. Policy gradient methods use the gradient of the expected reward. Bellman equations are linear operators on value functions — eigenvalues determine convergence speed.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🌐</div>
+      <h4>Graph Neural Networks</h4>
+      <p>GNNs operate on the graph Laplacian — a matrix whose eigenspectrum encodes the graph's structure. Message passing in GNNs is a sequence of linear transformations on node feature vectors. Used in molecular design, traffic prediction, and social networks.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🎨</div>
+      <h4>Generative AI (Diffusion)</h4>
+      <p>Stable Diffusion and DALL-E use score matching — computing the gradient of a log-probability function with respect to input pixels. The denoising process is guided by this score (a gradient), iteratively refined. Generating an image is literally gradient descent in pixel space.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🏙️</div>
+      <h4>Edge AI & IoT</h4>
+      <p>Deploying models on edge devices (microcontrollers, FPGAs) requires model compression. Techniques like weight pruning (setting small-norm weights to zero) and quantisation-aware training use linear algebraic analysis of weight matrices. PCA-based compression reduces model size for embedded deployment.</p>
+    </div>
+    <div class="case-card">
+      <div class="case-icon">🔐</div>
+      <h4>Privacy-Preserving ML</h4>
+      <p>Federated Learning aggregates gradients from edge devices without centralising data. Differential Privacy adds calibrated noise to gradients — the noise magnitude is set based on the sensitivity (a norm of the gradient). Both rely on vector calculus and linear algebra.</p>
+    </div>
+  </div>
+
+  <h3>A Letter to Every Learner</h3>
+
+  <blockquote>"You now possess something rare: the ability to see through the surface of AI and perceive its mathematical skeleton. Most people who use these tools never look inside. You can."</blockquote>
+
+  <p>When a data scientist at a hospital uses a model to flag patients at risk of sepsis, the model was trained using gradient descent over a cross-entropy loss function defined on a matrix of patient feature vectors. When an engineer at a satellite company detects a failing gyroscope from telemetry, they are applying PCA to time-series sensor matrices and looking for anomalies in reconstruction error. When a researcher designs a new attention mechanism for a language model, they are composing linear transformations and deriving gradients with the chain rule.</p>
+
+  <p>The mathematics you have learned is not a collection of historical curiosities. It is the living, breathing computational substrate of the most transformative technology humanity has ever produced. And you are now prepared to not merely consume these systems — but to build, extend, critique, and advance them.</p>
+
+  <h3>Recommended Next Steps</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-label">Immediate — Week 1</div>
+      <div class="tl-title">Implement gradient descent and PCA from scratch in NumPy</div>
+      <div class="tl-body">Do not use sklearn's PCA. Write your own. Verify it matches sklearn's output to 6 decimal places. This cements the mathematics like nothing else can.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Short Term — Month 1</div>
+      <div class="tl-title">Complete a deep learning course (fast.ai or Stanford CS231n)</div>
+      <div class="tl-body">With your mathematical foundation, these courses will feel transparent rather than magical. You will understand why every design choice is made.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Medium Term — Month 3</div>
+      <div class="tl-title">Read three foundational ML papers</div>
+      <div class="tl-body">Suggested: "Attention Is All You Need" (Transformers), "Dropout" (Srivastava et al.), and "Adam: A Method for Stochastic Optimisation" (Kingma & Ba). You will now understand the mathematics inside them.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Long Term — Month 6+</div>
+      <div class="tl-title">Contribute to an open-source ML project</div>
+      <div class="tl-body">PyTorch, scikit-learn, and Hugging Face are all maintained by communities. A bug fix, a documentation improvement, or a new metric implementation — all draw on what you know.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-label">Advanced — Ongoing</div>
+      <div class="tl-title">Study Information Geometry and Differential Geometry</div>
+      <div class="tl-body">The next frontier beyond what you have learned. Understanding the geometry of probability distributions (Fisher information metric) and curved manifolds (Riemannian geometry) is the basis of natural gradient methods, normalising flows, and geometric deep learning.</div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <strong>🎓 The Final Thought:</strong> Mathematics is not a prerequisite you endure before doing the "real" work of AI. It <em>is</em> the real work. Every paper that pushed the frontier — backpropagation, the kernel trick, variational autoencoders, transformer attention, diffusion score matching — was a mathematical idea before it was an engineering achievement. The deepest contributions to AI come from people who can think mathematically about learning, representation, and uncertainty. That is now you.
+  </div>
+
+  <div class="tag-row">
+    <span class="tag teal">Linear Algebra</span>
+    <span class="tag teal">Calculus</span>
+    <span class="tag teal">Multivariable Calculus</span>
+    <span class="tag gold">Deep Learning</span>
+    <span class="tag gold">Gradient Descent</span>
+    <span class="tag gold">PCA / SVD</span>
+    <span class="tag rust">IoT Systems</span>
+    <span class="tag rust">Edge AI</span>
+    <span class="tag rust">Transformers</span>
+    <span class="tag teal">Python · NumPy</span>
+  </div>
+</section>
+
+</div><!-- /page-wrap -->
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-title">Mathematical Foundations for Data Science</div>
+  <p style="margin-top:0.6rem">Capstone Lecture · All Topics Synthesised · Two Hours</p>
+  <p style="margin-top:0.8rem; font-size:0.68rem; opacity:0.5">∑ ∇ λ ∫  ·  Vectors · Matrices · Transformations · Eigendecomposition · Derivatives · Integration · Gradient Descent · PCA</p>
+</footer>
+
+</body>
+</html>
